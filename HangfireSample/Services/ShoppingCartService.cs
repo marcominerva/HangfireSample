@@ -1,14 +1,7 @@
 ﻿namespace HangfireSample.Services;
 
-public class ShoppingCartService : IShoppingCartService
+public class ShoppingCartService(ILogger<ShoppingCartService> logger) : IShoppingCartService
 {
-    private readonly ILogger<ShoppingCartService> logger;
-
-    public ShoppingCartService(ILogger<ShoppingCartService> logger)
-    {
-        this.logger = logger;
-    }
-
     public async Task CheckoutAsync()
     {
         logger.LogInformation("Starting checkout...");

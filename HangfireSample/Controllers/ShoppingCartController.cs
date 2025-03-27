@@ -8,17 +8,8 @@ namespace HangfireSample.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
-public class ShoppingCartController : ControllerBase
+public class ShoppingCartController(IBackgroundJobClient backgroundJobClient, IRecurringJobManager recurringJobClient) : ControllerBase
 {
-    private readonly IBackgroundJobClient backgroundJobClient;
-    private readonly IRecurringJobManager recurringJobClient;
-
-    public ShoppingCartController(IBackgroundJobClient backgroundJobClient, IRecurringJobManager recurringJobClient)
-    {
-        this.backgroundJobClient = backgroundJobClient;
-        this.recurringJobClient = recurringJobClient;
-    }
-
     [HttpPost("enqueue-checkout")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public IActionResult EnqueueCheckout()
