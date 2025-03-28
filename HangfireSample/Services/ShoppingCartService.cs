@@ -2,11 +2,11 @@
 
 public class ShoppingCartService(ILogger<ShoppingCartService> logger) : IShoppingCartService
 {
-    public async Task CheckoutAsync()
+    public async Task CheckoutAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Starting checkout...");
 
-        await Task.Delay(5000);
+        await Task.Delay(30000, cancellationToken);
 
         //throw new Exception("Incredible Exception!");
 
