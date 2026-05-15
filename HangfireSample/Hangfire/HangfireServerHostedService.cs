@@ -4,15 +4,11 @@ internal sealed class HangfireServerHostedService(HangfireServerManager serverMa
 {
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        serverManager.Start();
-
-        return Task.CompletedTask;
+        return serverManager.StartAsync(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        serverManager.Stop();
-
-        return Task.CompletedTask;
+        return serverManager.StopAsync(cancellationToken);
     }
 }

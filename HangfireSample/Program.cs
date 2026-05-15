@@ -42,8 +42,6 @@ builder.Services.AddSingleton(new BackgroundJobServerOptions
 builder.Services.AddSingleton<HangfireServerManager>();
 builder.Services.AddHostedService<HangfireServerHostedService>();
 
-builder.Services.AddHangfireServer();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

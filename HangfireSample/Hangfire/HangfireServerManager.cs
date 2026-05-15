@@ -1,11 +1,12 @@
 using Hangfire;
+using Hangfire.Server;
 
 namespace HangfireSample.Hangfire;
 
-public sealed class HangfireServerManager(JobStorage jobStorage, BackgroundJobServerOptions backgroundJobServerOptions, ILogger<HangfireServerManager> logger)
+public sealed class HangfireServerManager(JobStorage jobStorage, BackgroundJobServerOptions backgroundJobServerOptions, IEnumerable<IBackgroundProcess> additionalProcesses, ILogger<HangfireServerManager> logger)
 {
     private readonly Lock syncLock = new();
-    private BackgroundJobServer? server;
+    private IBackgroundProcessingServer? server;
 
     public bool IsRunning
     {
@@ -18,39 +19,52 @@ public sealed class HangfireServerManager(JobStorage jobStorage, BackgroundJobSe
         }
     }
 
-    public void Start()
+    public Task StartAsync(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         lock (syncLock)
         {
             if (server is not null)
             {
-                return;
+                return Task.CompletedTask;
             }
 
-            server = new BackgroundJobServer(backgroundJobServerOptions, jobStorage);
+            server = new BackgroundJobServer(backgroundJobServerOptions, jobStorage, additionalProcesses);
         }
 
         logger.LogInformation("Hangfire background job server started.");
+
+        return Task.CompletedTask;
     }
 
-    public void Stop()
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
-        BackgroundJobServer? serverToDispose;
+        IBackgroundProcessingServer? serverToStop;
 
         lock (syncLock)
         {
-            serverToDispose = server;
+            serverToStop = server;
             server = null;
         }
 
-        if (serverToDispose is null)
+        if (serverToStop is null)
         {
             return;
         }
 
         logger.LogInformation("Stopping Hangfire background job server.");
 
-        serverToDispose.Dispose();
+        try
+        {
+            serverToStop.SendStop();
+            await serverToStop.WaitForShutdownAsync(cancellationToken);
+        }
+        catch (ObjectDisposedException)
+        {
+        }
+
+        serverToStop.Dispose();
 
         logger.LogInformation("Hangfire background job server stopped.");
     }

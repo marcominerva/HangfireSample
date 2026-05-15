@@ -18,18 +18,18 @@ public class HangfireServerController(HangfireServerManager serverManager) : Con
 
     [HttpPost("start")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public IActionResult Start()
+    public async Task<IActionResult> StartAsync(CancellationToken cancellationToken)
     {
-        serverManager.Start();
+        await serverManager.StartAsync(cancellationToken);
 
         return NoContent();
     }
 
     [HttpPost("stop")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public IActionResult Stop()
+    public async Task<IActionResult> StopAsync(CancellationToken cancellationToken)
     {
-        serverManager.Stop();
+        await serverManager.StopAsync(cancellationToken);
 
         return NoContent();
     }
