@@ -3,7 +3,7 @@ using Hangfire.Server;
 
 namespace HangfireSample.Hangfire;
 
-public sealed class HangfireServerManager(JobStorage jobStorage, BackgroundJobServerOptions backgroundJobServerOptions, IEnumerable<IBackgroundProcess> additionalProcesses, ILogger<HangfireServerManager> logger)
+public class HangfireServerManager(JobStorage jobStorage, BackgroundJobServerOptions backgroundJobServerOptions, IEnumerable<IBackgroundProcess> additionalProcesses, ILogger<HangfireServerManager> logger)
 {
     private readonly Lock syncLock = new();
     private IBackgroundProcessingServer? server;
